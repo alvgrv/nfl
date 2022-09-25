@@ -1,3 +1,5 @@
+response.json
+
 app/.chalice/deployments/
 app/.chalice/venv/
 app/.venv/*
