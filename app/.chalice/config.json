@@ -5,13 +5,12 @@
   "automatic_layer": true,
   "lambda_functions": {
     "ticker": {
-      "lambda_timeout": 900,
+      "lambda_timeout": 240,
       "autogen_policy": false,
       "iam_policy_file": "policy.json"
     }
   },
   "environment_variables": {
-    "LOG_LEVEL": "INFO",
     "SCHEDULE_TABLE": "nfl-schedule",
     "DATA_TABLE": "nfl-data",
     "SCRAPE_TARGET": "https://www.pro-football-reference.com"

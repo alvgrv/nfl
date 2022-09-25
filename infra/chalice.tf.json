@@ -32,12 +32,11 @@
                 "tags": {
                     "aws-chalice": "version=1.27.3:stage=dev:app=nfl"
                 },
-                "timeout": 900,
+                "timeout": 240,
                 "source_code_hash": "${filebase64sha256(\"${path.module}/deployment.zip\")}",
                 "filename": "${path.module}/deployment.zip",
                 "environment": {
                     "variables": {
-                        "LOG_LEVEL": "INFO",
                         "SCHEDULE_TABLE": "nfl-schedule",
                         "DATA_TABLE": "nfl-data",
                         "SCRAPE_TARGET": "https://www.pro-football-reference.com"

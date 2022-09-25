@@ -1,7 +1,7 @@
 import logging
 import os
 
-from chalicelib.utils import populate_empty_schedule
+from chalicelib.utils import populate_empty_schedule, new_seasons_at_source
 
 from chalice import Chalice
 import boto3
@@ -9,8 +9,9 @@ import boto3
 app = Chalice(app_name="app")
 
 LOGGER = app.log
+LOGGER.setLevel(logging.INFO)
 
-# @app.schedule("rate(10 minutes)")
+# @app.schedule("rate(10 minutes)") TODO
 @app.lambda_function()
 def ticker(_event, _context):
     """Cron function checking for new data.
@@ -26,8 +27,8 @@ def ticker(_event, _context):
                 check have happened and check have data
 
     general process:
-        get game_id, date, has happened, has data from schedule table
-        for games not happened
+        get game_id, date, has data from schedule table
+        for games not happened but date is in the past:
             if today == game date + 1, check has happened + check has data
 
         for each game id that has not happened
@@ -39,17 +40,22 @@ def ticker(_event, _context):
     ddb = boto3.resource("dynamodb")
     schedule_table = ddb.Table(schedule_table_name)
 
-    if not schedule_table.item_count:
-        LOGGER.info("Table empty, populating...")
+    if not len(schedule_table.scan()["Items"]):
+        LOGGER.info("Schedule table empty, populating...")
         populate_empty_schedule(schedule_table)
-        LOGGER.info("Table populated")
 
-    # add logging
-    # make table go up in one bang rather than row by row? (makes it atomic)
-    # run first time and alter lambda timeout accordingly
-    #
+    LOGGER.info("Table has contents, checking years up to date...")
+    if new_seasons_at_source(schedule_table):
+        LOGGER.info("New season(s) found at source")
+
+    # for each game that has happened but has not been scraped
+    # publish that game id to eventbridge
 
     return None
+
+
+if __name__ == "__main__":
+    ticker("", "")
 
 
 # @app.on_cw_event({"source": ["nfl-live-ticker"]})

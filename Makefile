@@ -17,11 +17,9 @@ rmvenv:
 	rm -rf app/poetry.lock
 
 package:
-	date
 	cd app; poetry export --without-hashes --format requirements.txt --output requirements.txt
 	cd app; poetry run chalice package --pkg-format terraform ../infra
 	python utils/hack_terraform.py
-	date
 
 plan:
 	cd infra; terraform plan

@@ -6,7 +6,7 @@ import pandas as pd
 
 
 class ScheduleScraper:
-    def __init__(self, season):
+    def __init__(self, season=None):
         self.season = season
         self.scrape_target = os.environ["SCRAPE_TARGET"]
 
@@ -34,12 +34,25 @@ class ScheduleScraper:
         schedule["has_data"] = [
             True if row == "boxscore" else False for row in schedule["url"]
         ]
+        schedule["has_been_scraped"] = [False] * len(schedule)
         for index, row in schedule.iterrows():
             if all([row["has_data"], row["at"] != "@"]):
                 schedule.at[index, "away"] = row["home"]
                 schedule.at[index, "home"] = row["away"]
 
         schedule["url"] = game_urls
+        schedule["season"] = [str(self.season)] * len(schedule)
         schedule["id"] = game_ids
 
-        return schedule["id week day date time away home url".split()].copy()
+        return schedule[
+            "id season week day date time away home url has_data has_been_scraped".split()
+        ].copy()
+
+    @property
+    def seasons_at_source(self):
+        req = requests.get(f"{self.scrape_target}/years")
+        soup = BeautifulSoup(req.text, "lxml")
+        years_div = soup.find("table", id="years")
+        years_df = pd.read_html(str(years_div))[0]
+        years = years_df["Year"].drop_duplicates().to_list()
+        return sorted(list(set([n for n in years])))

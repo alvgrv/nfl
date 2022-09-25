@@ -10,21 +10,31 @@ LOGGER = logging.getLogger(__name__)
 def get_current_season():
     if dt.datetime.now().month >= 7:
         return dt.datetime.now().year
-
     return dt.datetime.now().year - 1
+
+
+def scrape_season_into_db(season, table):
+    LOGGER.info("Scraping season %s", season)
+    schedule_scraper = ScheduleScraper(season)
+    schedule_df = schedule_scraper.season_schedule
+    with table.batch_writer() as batch:
+        for _, row in schedule_df.iterrows():
+            batch.put_item(Item=row.to_dict())
+    LOGGER.info("Season %s scraped into database", season)
 
 
 def populate_empty_schedule(table):
     current_season = get_current_season()
     seasons = [current_season - 1, current_season]
     for season in seasons:
-        LOGGER.info("Scraping season %s", season)
-        schedule_scraper = ScheduleScraper(season)
-        schedule_df = schedule_scraper.season_schedule
-        with table.batch_writer() as batch:
-            for _, row in schedule_df.iterrows():
-                batch.put_item(Item=row.to_dict())
+        scrape_season_into_db(season, table)
 
 
-def is_table_empty(table):
-    """Takes DynamoDB Table resource, returns true if empty."""
+def new_seasons_at_source(table):
+    seasons_in_db = sorted(
+        list(set([int(d["season"][:4]) for d in table.scan()["Items"]]))
+    )
+    schedule_scraper = ScheduleScraper()
+    seasons_at_source = schedule_scraper.seasons_at_source
+    num_new_seasons = max(seasons_at_source) - max(seasons_in_db)
+    return seasons_at_source[-num_new_seasons:]
