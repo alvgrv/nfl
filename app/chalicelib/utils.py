@@ -1,13 +1,11 @@
 import datetime as dt
-import logging
+from . import LOGGER
 import json
 import os
 
 import boto3
 
 from .scraper import ScheduleScraper
-
-LOGGER = logging.getLogger("app")
 
 
 def get_current_season():
