@@ -1,7 +1,14 @@
 import logging
+import json
 import os
 
-from chalicelib.utils import populate_empty_schedule, new_seasons_at_source
+from chalicelib.utils import (
+    populate_empty_schedule,
+    new_seasons_at_source,
+    get_game_ids_to_scrape,
+    put_onto_eventbridge,
+    scrape_season_schedule_into_db,
+)
 
 from chalice import Chalice
 import boto3
@@ -44,12 +51,24 @@ def ticker(_event, _context):
         LOGGER.info("Schedule table empty, populating...")
         populate_empty_schedule(schedule_table)
 
-    LOGGER.info("Table has contents, checking years up to date...")
+    LOGGER.info("Checking years up to date...")
     if new_seasons_at_source(schedule_table):
         LOGGER.info("New season(s) found at source")
+        for season in new_seasons_at_source(schedule_table):
+            LOGGER.info("Scraping season %s schedule...", season)
+            scrape_season_schedule_into_db(season, schedule_table)
 
-    # for each game that has happened but has not been scraped
-    # publish that game id to eventbridge
+    LOGGER.info("Checking new games to scrape...")
+    game_ids_to_scrape = get_game_ids_to_scrape(schedule_table)
+    if game_ids_to_scrape:
+        LOGGER.info(
+            "%s new games found to scrape, putting onto EventBridge...",
+            len(game_ids_to_scrape),
+        )
+        eb = boto3.client("events")
+        put_onto_eventbridge(game_ids_to_scrape, eb)
+
+    LOGGER.info("Ticker checks complete")
 
     return None
 
@@ -58,8 +77,7 @@ if __name__ == "__main__":
     ticker("", "")
 
 
-# @app.on_cw_event({"source": ["nfl-live-ticker"]})
-# def scraper(event, _context):
-#
-#     del event
-#     return None
+@app.on_cw_event({"detail-type": ["nfl-ticker"]})
+def scraper(event, _context):
+
+    print(event)
