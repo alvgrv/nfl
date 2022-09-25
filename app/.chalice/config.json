@@ -1,0 +1,19 @@
+{
+  "version": "2.0",
+  "app_name": "nfl",
+  "api_gateway_stage": "api",
+  "automatic_layer": true,
+  "lambda_functions": {
+    "ticker": {
+      "lambda_timeout": 900,
+      "autogen_policy": false,
+      "iam_policy_file": "policy.json"
+    }
+  },
+  "environment_variables": {
+    "LOG_LEVEL": "INFO",
+    "SCHEDULE_TABLE": "nfl-schedule",
+    "DATA_TABLE": "nfl-data",
+    "SCRAPE_TARGET": "https://www.pro-football-reference.com"
+  }
+}
