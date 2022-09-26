@@ -1,5 +1,5 @@
 # TODO iam users/roles
-# TODO
+# TODO variables for table names, lambda names
 
 terraform {
   required_providers {
@@ -22,7 +22,6 @@ resource "aws_vpc" "example" {
 }
 
 resource "aws_dynamodb_table" "schedule_table" {
-  # TODO use tf var for env var in chalice config json
   name         = "nfl-schedule"
   billing_mode = "PROVISIONED"
   # total capacity units = 25 read + 25 write across all DDB

@@ -13,7 +13,8 @@
         "logs:PutLogEvents"
       ],
       "Resource": [
-        "arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-ticker:*"
+        "arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-ticker:*",
+        "arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-scraper:*"
       ]
     },
     {

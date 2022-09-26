@@ -1,11 +1,10 @@
 import datetime as dt
 from . import LOGGER
 import json
-import os
 
 import boto3
 
-from .scraper import ScheduleScraper
+from .scraperlib import ScheduleScraper
 
 
 def get_dynamodb_table(table_name):
@@ -33,9 +32,11 @@ def scrape_season_schedule_into_db(season, table):
     LOGGER.info("Season %s scraped into database", season)
 
 
-def populate_empty_schedule(table):
+def populate_empty_schedule(table, back_seasons=0):
     current_season = get_current_season()
-    seasons = [current_season - 1, current_season]
+    seasons = [current_season]
+    if back_seasons:
+        seasons.extend([current_season - n for n in range(seasons + 1)])
     for season in seasons:
         scrape_season_schedule_into_db(season, table)
 
@@ -61,16 +62,25 @@ def get_game_ids_to_scrape(table):
     )
 
 
-def put_onto_eventbridge(game_ids, eb):
-    for game_id in game_ids:
-        response = eb.put_events(
-            Entries=[
-                {
-                    "Source": "nfl-ticker",
-                    "Detail": json.dumps({"game_id": game_id}),
-                    "DetailType": "game_to_scrape",
-                }
-            ]
-        )
-        if response["FailedEntryCount"]:
-            LOGGER.info("Event put failed for game_id %s", game_id)
+def put_onto_eventbridge(source, detail, detail_type):
+    """Put an event onto EventBridge.
+
+    Args:
+        source (str): source
+        detail (dict): detail as dict
+        detail_type (str): detail type
+
+    """
+    eb = boto3.client("events")
+    response = eb.put_events(
+        Entries=[
+            {
+                "Source": source,
+                "Detail": json.dumps(detail),
+                "DetailType": detail_type,
+            }
+        ]
+    )
+    if response["FailedEntryCount"]:
+        LOGGER.info("Event put failed")
+    LOGGER.info("Event put onto EventBridge")

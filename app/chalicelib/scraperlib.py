@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-from . import LOGGER
 import requests
 import datetime as dt
 import re

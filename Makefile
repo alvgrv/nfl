@@ -1,15 +1,6 @@
-#codeartifact-login:
-#	utils/codeartifact-login.sh
-
-python:
-	python --version
-
-install:
+venv:
 	cd app; poetry install
-	cd app; poetry env use 3.9.11
-	cd app; poetry run python --version
-	# cd app; poetry run pip install --index-url https://pypi.org/simple/ --disable-pip-version-check --upgrade pip==21.0.1 setuptools==57.5.0;
-
+	cd app; poetry run pip install --index-url https://pypi.org/simple/ --disable-pip-version-check --upgrade pip==21.0.1 setuptools==57.5.0;
 
 rmvenv:
 	rm -rf app/.venv
