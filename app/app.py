@@ -2,7 +2,10 @@ import logging
 import json
 import os
 
+from chalicelib.scraper import GameScraper
 from chalicelib.utils import (
+    add_dict_to_dynamodb,
+    get_dynamodb_table,
     populate_empty_schedule,
     new_seasons_at_source,
     get_game_ids_to_scrape,
@@ -21,31 +24,9 @@ LOGGER.setLevel(logging.INFO)
 # @app.schedule("rate(10 minutes)") TODO
 @app.lambda_function()
 def ticker(_event, _context):
-    """Cron function checking for new data.
-
-    idempotent first run stuff:
-        if table empty
-            download calendar for current + last X years
-            check have happened and check have data
-
-        else query db for years
-            if new year in schedule vs years on site
-                download calendar for new year
-                check have happened and check have data
-
-    general process:
-        get game_id, date, has data from schedule table
-        for games not happened but date is in the past:
-            if today == game date + 1, check has happened + check has data
-
-        for each game id that has not happened
-        if a game has newly happened, update the table
-        if a game newly has data, update the table, send an event triggering the scraper
-    """
-    schedule_table_name = os.environ["SCHEDULE_TABLE"]
-    LOGGER.info("Connecting to DynamoDB table %s", schedule_table_name)
-    ddb = boto3.resource("dynamodb")
-    schedule_table = ddb.Table(schedule_table_name)
+    """Cron function checking for new data."""
+    LOGGER.info("Connecting to schedule table")
+    schedule_table = get_dynamodb_table(os.environ["SCHEDULE_TABLE"])
 
     if not len(schedule_table.scan()["Items"]):
         LOGGER.info("Schedule table empty, populating...")
@@ -59,7 +40,8 @@ def ticker(_event, _context):
             scrape_season_schedule_into_db(season, schedule_table)
 
     LOGGER.info("Checking new games to scrape...")
-    game_ids_to_scrape = get_game_ids_to_scrape(schedule_table)
+    # game_ids_to_scrape = get_game_ids_to_scrape(schedule_table) TODO
+    game_ids_to_scrape = ["202209080ram"]
     if game_ids_to_scrape:
         LOGGER.info(
             "%s new games found to scrape, putting onto EventBridge...",
@@ -73,11 +55,14 @@ def ticker(_event, _context):
     return None
 
 
-if __name__ == "__main__":
-    ticker("", "")
+@app.on_cw_event({"detail-type": ["game_to_scrape"]})
+def scraper(event):
+    game_id = event.to_dict()["detail"]["game_id"]
+    game_scraper = GameScraper(game_id)
+    game_dict = game_scraper.game_dict
+    data_table = get_dynamodb_table(os.environ["DATA_TABLE"])
+    add_dict_to_dynamodb(game_dict, data_table)
 
 
-@app.on_cw_event({"detail-type": ["nfl-ticker"]})
-def scraper(event, _context):
-
-    print(event)
+# scraper does not have perms to put item on DDB
+# but it should do

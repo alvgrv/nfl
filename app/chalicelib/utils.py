@@ -8,10 +8,19 @@ import boto3
 from .scraper import ScheduleScraper
 
 
+def get_dynamodb_table(table_name):
+    ddb = boto3.resource("dynamodb")
+    return ddb.Table(table_name)
+
+
 def get_current_season():
     if dt.datetime.now().month >= 7:
         return dt.datetime.now().year
     return dt.datetime.now().year - 1
+
+
+def add_dict_to_dynamodb(dict_, table):
+    table.put_item(Item=dict_)
 
 
 def scrape_season_schedule_into_db(season, table):

@@ -35,6 +35,13 @@
         "arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-schedule",
         "arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-data"
       ]
+    },
+    {
+      "Action": [
+        "events:PutEvents"
+      ],
+      "Resource": "arn:aws:events:eu-west-1:094758758809:event-bus/default",
+      "Effect": "Allow"
     }
   ]
 }

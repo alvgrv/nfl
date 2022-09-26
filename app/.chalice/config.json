@@ -8,6 +8,11 @@
       "lambda_timeout": 240,
       "autogen_policy": false,
       "iam_policy_file": "policy.json"
+    },
+    "scraper": {
+      "lambda_timeout": 60,
+      "autogen_policy": false,
+      "iam_policy_file": "policy.json"
     }
   },
   "environment_variables": {
