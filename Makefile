@@ -5,14 +5,13 @@ python:
 	python --version
 
 install:
-#	poetry run pip install --disable-pip-version-check --upgrade pip==21.0.1 setuptools==57.5.0;
 	cd app; poetry install
 	cd app; poetry env use 3.9.11
+	cd app; poetry run python --version
+	# cd app; poetry run pip install --index-url https://pypi.org/simple/ --disable-pip-version-check --upgrade pip==21.0.1 setuptools==57.5.0;
+
 
 rmvenv:
-#	rm -rf app/.venv/bin
-#	rm -rf app/.venv/lib
-#	rm -rf app/.venv/pyvenv.cfg
 	rm -rf app/.venv
 	rm -rf app/poetry.lock
 
@@ -29,7 +28,6 @@ apply:
 
 destroy:
 	cd infra; terraform apply -destroy -auto-approve
-
 
 clean:
 	rm -rf ./app/.chalice/deployments
