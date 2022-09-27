@@ -58,7 +58,8 @@
                         "SCHEDULE_TABLE": "nfl-schedule",
                         "DATA_TABLE": "nfl-data",
                         "DATA_TABLE_STREAM": "${aws_dynamodb_table.data_table.stream_arn}",
-                        "SCRAPE_TARGET": "https://www.pro-football-reference.com"
+                        "SCRAPE_TARGET": "https://www.pro-football-reference.com",
+                        "SITE_BUCKET_ARN": "${aws_s3_bucket.site_bucket.arn}"
                     }
                 },
                 "layers": [
@@ -82,7 +83,8 @@
                         "SCHEDULE_TABLE": "nfl-schedule",
                         "DATA_TABLE": "nfl-data",
                         "DATA_TABLE_STREAM": "${aws_dynamodb_table.data_table.stream_arn}",
-                        "SCRAPE_TARGET": "https://www.pro-football-reference.com"
+                        "SCRAPE_TARGET": "https://www.pro-football-reference.com",
+                        "SITE_BUCKET_ARN": "${aws_s3_bucket.site_bucket.arn}"
                     }
                 },
                 "layers": [
@@ -106,7 +108,8 @@
                         "SCHEDULE_TABLE": "nfl-schedule",
                         "DATA_TABLE": "nfl-data",
                         "DATA_TABLE_STREAM": "${aws_dynamodb_table.data_table.stream_arn}",
-                        "SCRAPE_TARGET": "https://www.pro-football-reference.com"
+                        "SCRAPE_TARGET": "https://www.pro-football-reference.com",
+                        "SITE_BUCKET_ARN": "${aws_s3_bucket.site_bucket.arn}"
                     }
                 },
                 "layers": [
