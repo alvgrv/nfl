@@ -13,6 +13,7 @@ from chalicelib.utils import (
 )
 
 from chalice import Chalice
+from jinja2 import Environment
 
 app = Chalice(app_name="nfl")
 
@@ -68,4 +69,30 @@ def scraper(event):
 
 @app.on_dynamodb_record(os.environ["DATA_TABLE_STREAM"])
 def site_gen(event):
-    print("Success")
+
+    template = """
+<!DOCTYPE html>
+<html lang="en">
+
+<head></head>
+
+<body>                        
+<p class='min'>{{ game.date }}</p>
+<p class='min'>{{ game.time }}</p>
+<p>{{ game.away_team }}</p>
+<p>{{ game.home_team }}</p>
+<p class='min'>{{ game.fun_index }}</p></body>
+</html>
+    """
+
+    env = Environment()
+    tmpl = env.from_string(template)
+
+    game_scraper = GameScraper("202209080ram")
+    game_dict = game_scraper.game_dict
+
+    print(tmpl.render(game=game_dict))
+
+
+if __name__ == "__main__":
+    site_gen("", "")

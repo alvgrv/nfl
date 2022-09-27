@@ -1,0 +1,32 @@
+- add site gen
+    - s3 bucket in terraform
+    - site gen lambda w jinja
+    - add function for is bucket empty -> init
+- add emailer to tell me when new games
+- terraform variables
+- refactor scraper
+    - add flags for things like closeness, other metrics
+- tests for scraper
+- break out db init into its own lambda
+- refactor app.py to point to controllers for ticker, scraper
+- refactor all those many utils
+- is dynamo the right kind of database? could be using rds + sqlalchemy
+
+
+CURRENT.HTML (AKA INDEX)
+
+Shows the current week
+
+
+PREVIOUS.HTML
+
+Is the same as index but for the previous week
+
+SITE GEN
+
+if game scraped (from dynamodb event) is not the last game in its week:
+rewrite current.html
+
+if game scraped is the first game in a new week:
+delete previous.html, rename current.html to previous
+write a new template for the new week and name it current.html

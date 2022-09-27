@@ -645,7 +645,7 @@ reference = "PyPI"
 name = "jinja2"
 version = "3.1.2"
 description = "A very fast and expressive template engine."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -955,7 +955,7 @@ reference = "PyPI"
 name = "markupsafe"
 version = "2.1.1"
 description = "Safely add untrusted strings to HTML/XML markup."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -1908,7 +1908,7 @@ reference = "PyPI"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9, <3.10"
-content-hash = "4e4e9be5f1b2285053339251cecbba468040cb3abcc86c37d3f156beb6d7a6d2"
+content-hash = "a0b8f1341777ed6afb6fbc46e3560713cdecabaf9ca5c86c4c7d4f4844bba0ea"
 
 [metadata.files]
 ansicon = [

@@ -12,7 +12,6 @@ infra/layer-deployment.zip
 
 utils/codeartifact-login.sh
 utils/NFLFunIndex-AWS.drawio.*
-utils/notes.txt
 
 # Local .terraform directories
 **/.terraform/*

@@ -98,6 +98,31 @@ data "aws_iam_policy_document" "site_bucket" {
     ]
   }
 }
+
+
+#resource "aws_cloudfront_distribution" "site_bucket" {
+#  origin {
+#    domain_name = aws_s3_bucket.site_bucket.bucket_regional_domain_name
+#    # origin_id   = local.s3_origin_id
+#
+#    s3_origin_config {
+#      origin_access_identity = "origin-access-identity/cloudfront/ABCDEFG1234567"
+#    }
+#  }
+#
+#  enabled             = true
+#  is_ipv6_enabled     = true
+#  comment             = "Some comment"
+#  default_root_object = "index.html"
+#
+#  logging_config {
+#    include_cookies = false
+#    bucket          = "mylogs.s3.amazonaws.com"
+#    prefix          = "myprefix"
+#  }
+#}
+
+
 #
 #resource "aws_acm_certificate" "site_bucket" {
 #  provider                  = aws.acm_provider
