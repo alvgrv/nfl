@@ -18,18 +18,27 @@
             "scraper_role": {
                 "name": "nfl-dev-scraper",
                 "assume_role_policy": "{\"Version\": \"2012-10-17\", \"Statement\": [{\"Sid\": \"\", \"Effect\": \"Allow\", \"Principal\": {\"Service\": \"lambda.amazonaws.com\"}, \"Action\": \"sts:AssumeRole\"}]}"
+            },
+            "site_gen_role": {
+                "name": "nfl-dev-site_gen",
+                "assume_role_policy": "{\"Version\": \"2012-10-17\", \"Statement\": [{\"Sid\": \"\", \"Effect\": \"Allow\", \"Principal\": {\"Service\": \"lambda.amazonaws.com\"}, \"Action\": \"sts:AssumeRole\"}]}"
             }
         },
         "aws_iam_role_policy": {
             "ticker_role": {
                 "name": "ticker_rolePolicy",
-                "policy": "{\"Version\": \"2012-10-17\", \"Statement\": [{\"Effect\": \"Allow\", \"Action\": \"logs:CreateLogGroup\", \"Resource\": \"arn:aws:logs:eu-west-1:094758758809:*\"}, {\"Effect\": \"Allow\", \"Action\": [\"logs:CreateLogStream\", \"logs:PutLogEvents\"], \"Resource\": [\"arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-ticker:*\", \"arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-scraper:*\"]}, {\"Effect\": \"Allow\", \"Action\": [\"dynamodb:BatchGet*\", \"dynamodb:DescribeStream\", \"dynamodb:DescribeTable\", \"dynamodb:Get*\", \"dynamodb:Query\", \"dynamodb:Scan\", \"dynamodb:BatchWrite*\", \"dynamodb:CreateTable\", \"dynamodb:Delete*\", \"dynamodb:Update*\", \"dynamodb:PutItem\"], \"Resource\": [\"arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-schedule\", \"arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-data\"]}, {\"Action\": [\"events:PutEvents\"], \"Resource\": \"arn:aws:events:eu-west-1:094758758809:event-bus/default\", \"Effect\": \"Allow\"}]}",
+                "policy": "{\"Version\": \"2012-10-17\", \"Statement\": [{\"Effect\": \"Allow\", \"Action\": \"logs:CreateLogGroup\", \"Resource\": \"arn:aws:logs:eu-west-1:094758758809:*\"}, {\"Effect\": \"Allow\", \"Action\": [\"logs:CreateLogStream\", \"logs:PutLogEvents\"], \"Resource\": [\"arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-ticker:*\", \"arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-scraper:*\", \"arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-site_gen:*\"]}, {\"Effect\": \"Allow\", \"Action\": [\"dynamodb:BatchGet*\", \"dynamodb:DescribeStream\", \"dynamodb:DescribeTable\", \"dynamodb:Get*\", \"dynamodb:Query\", \"dynamodb:Scan\", \"dynamodb:BatchWrite*\", \"dynamodb:CreateTable\", \"dynamodb:Delete*\", \"dynamodb:Update*\", \"dynamodb:PutItem\", \"dynamodb:ListStreams\"], \"Resource\": [\"arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-schedule\", \"arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-data\", \"arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-data/stream/*\"]}, {\"Action\": [\"events:PutEvents\"], \"Resource\": \"arn:aws:events:eu-west-1:094758758809:event-bus/default\", \"Effect\": \"Allow\"}]}",
                 "role": "${aws_iam_role.ticker_role.id}"
             },
             "scraper_role": {
                 "name": "scraper_rolePolicy",
-                "policy": "{\"Version\": \"2012-10-17\", \"Statement\": [{\"Effect\": \"Allow\", \"Action\": \"logs:CreateLogGroup\", \"Resource\": \"arn:aws:logs:eu-west-1:094758758809:*\"}, {\"Effect\": \"Allow\", \"Action\": [\"logs:CreateLogStream\", \"logs:PutLogEvents\"], \"Resource\": [\"arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-ticker:*\", \"arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-scraper:*\"]}, {\"Effect\": \"Allow\", \"Action\": [\"dynamodb:BatchGet*\", \"dynamodb:DescribeStream\", \"dynamodb:DescribeTable\", \"dynamodb:Get*\", \"dynamodb:Query\", \"dynamodb:Scan\", \"dynamodb:BatchWrite*\", \"dynamodb:CreateTable\", \"dynamodb:Delete*\", \"dynamodb:Update*\", \"dynamodb:PutItem\"], \"Resource\": [\"arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-schedule\", \"arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-data\"]}, {\"Action\": [\"events:PutEvents\"], \"Resource\": \"arn:aws:events:eu-west-1:094758758809:event-bus/default\", \"Effect\": \"Allow\"}]}",
+                "policy": "{\"Version\": \"2012-10-17\", \"Statement\": [{\"Effect\": \"Allow\", \"Action\": \"logs:CreateLogGroup\", \"Resource\": \"arn:aws:logs:eu-west-1:094758758809:*\"}, {\"Effect\": \"Allow\", \"Action\": [\"logs:CreateLogStream\", \"logs:PutLogEvents\"], \"Resource\": [\"arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-ticker:*\", \"arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-scraper:*\", \"arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-site_gen:*\"]}, {\"Effect\": \"Allow\", \"Action\": [\"dynamodb:BatchGet*\", \"dynamodb:DescribeStream\", \"dynamodb:DescribeTable\", \"dynamodb:Get*\", \"dynamodb:Query\", \"dynamodb:Scan\", \"dynamodb:BatchWrite*\", \"dynamodb:CreateTable\", \"dynamodb:Delete*\", \"dynamodb:Update*\", \"dynamodb:PutItem\", \"dynamodb:ListStreams\"], \"Resource\": [\"arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-schedule\", \"arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-data\", \"arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-data/stream/*\"]}, {\"Action\": [\"events:PutEvents\"], \"Resource\": \"arn:aws:events:eu-west-1:094758758809:event-bus/default\", \"Effect\": \"Allow\"}]}",
                 "role": "${aws_iam_role.scraper_role.id}"
+            },
+            "site_gen_role": {
+                "name": "site_gen_rolePolicy",
+                "policy": "{\"Version\": \"2012-10-17\", \"Statement\": [{\"Effect\": \"Allow\", \"Action\": \"logs:CreateLogGroup\", \"Resource\": \"arn:aws:logs:eu-west-1:094758758809:*\"}, {\"Effect\": \"Allow\", \"Action\": [\"logs:CreateLogStream\", \"logs:PutLogEvents\"], \"Resource\": [\"arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-ticker:*\", \"arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-scraper:*\", \"arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-site_gen:*\"]}, {\"Effect\": \"Allow\", \"Action\": [\"dynamodb:BatchGet*\", \"dynamodb:DescribeStream\", \"dynamodb:DescribeTable\", \"dynamodb:Get*\", \"dynamodb:Query\", \"dynamodb:Scan\", \"dynamodb:BatchWrite*\", \"dynamodb:CreateTable\", \"dynamodb:Delete*\", \"dynamodb:Update*\", \"dynamodb:PutItem\", \"dynamodb:ListStreams\"], \"Resource\": [\"arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-schedule\", \"arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-data\", \"arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-data/stream/*\"]}, {\"Action\": [\"events:PutEvents\"], \"Resource\": \"arn:aws:events:eu-west-1:094758758809:event-bus/default\", \"Effect\": \"Allow\"}]}",
+                "role": "${aws_iam_role.site_gen_role.id}"
             }
         },
         "aws_lambda_function": {
@@ -48,6 +57,7 @@
                     "variables": {
                         "SCHEDULE_TABLE": "nfl-schedule",
                         "DATA_TABLE": "nfl-data",
+                        "DATA_TABLE_STREAM": "${aws_dynamodb_table.data_table.stream_arn}",
                         "SCRAPE_TARGET": "https://www.pro-football-reference.com"
                     }
                 },
@@ -71,6 +81,7 @@
                     "variables": {
                         "SCHEDULE_TABLE": "nfl-schedule",
                         "DATA_TABLE": "nfl-data",
+                        "DATA_TABLE_STREAM": "${aws_dynamodb_table.data_table.stream_arn}",
                         "SCRAPE_TARGET": "https://www.pro-football-reference.com"
                     }
                 },
@@ -78,12 +89,36 @@
                     "${aws_lambda_layer_version.managed-layer.arn}"
                 ],
                 "role": "${aws_iam_role.scraper_role.arn}"
+            },
+            "site_gen": {
+                "function_name": "nfl-dev-site_gen",
+                "runtime": "python3.9",
+                "handler": "app.site_gen",
+                "memory_size": 128,
+                "tags": {
+                    "aws-chalice": "version=1.27.3:stage=dev:app=nfl"
+                },
+                "timeout": 60,
+                "source_code_hash": "${filebase64sha256(\"${path.module}/deployment.zip\")}",
+                "filename": "${path.module}/deployment.zip",
+                "environment": {
+                    "variables": {
+                        "SCHEDULE_TABLE": "nfl-schedule",
+                        "DATA_TABLE": "nfl-data",
+                        "DATA_TABLE_STREAM": "${aws_dynamodb_table.data_table.stream_arn}",
+                        "SCRAPE_TARGET": "https://www.pro-football-reference.com"
+                    }
+                },
+                "layers": [
+                    "${aws_lambda_layer_version.managed-layer.arn}"
+                ],
+                "role": "${aws_iam_role.site_gen_role.arn}"
             }
         },
         "aws_cloudwatch_event_rule": {
             "ticker-event": {
                 "name": "ticker-event",
-                "schedule_expression": "rate(2 hour)",
+                "schedule_expression": "rate(2 hours)",
                 "description": ""
             },
             "scraper-event": {
@@ -115,6 +150,15 @@
                 "action": "lambda:InvokeFunction",
                 "principal": "events.amazonaws.com",
                 "source_arn": "${aws_cloudwatch_event_rule.scraper-event.arn}"
+            }
+        },
+        "aws_lambda_event_source_mapping": {
+            "site_gen-dynamodb-event-source": {
+                "event_source_arn": "${aws_dynamodb_table.data_table.stream_arn}",
+                "batch_size": 100,
+                "starting_position": "LATEST",
+                "maximum_batching_window_in_seconds": 0,
+                "function_name": "${aws_lambda_function.site_gen.arn}"
             }
         }
     },

@@ -14,7 +14,8 @@
       ],
       "Resource": [
         "arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-ticker:*",
-        "arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-scraper:*"
+        "arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-scraper:*",
+        "arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-site_gen:*"
       ]
     },
     {
@@ -30,11 +31,13 @@
         "dynamodb:CreateTable",
         "dynamodb:Delete*",
         "dynamodb:Update*",
-        "dynamodb:PutItem"
+        "dynamodb:PutItem",
+        "dynamodb:ListStreams"
       ],
       "Resource": [
         "arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-schedule",
-        "arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-data"
+        "arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-data",
+        "arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-data/stream/*"
       ]
     },
     {

@@ -17,7 +17,7 @@ provider "aws" {
 }
 
 # Create a VPC
-resource "aws_vpc" "example" {
+resource "aws_vpc" "private_vpc" {
   cidr_block = "10.0.0.0/16"
 }
 
@@ -37,11 +37,13 @@ resource "aws_dynamodb_table" "schedule_table" {
 }
 
 resource "aws_dynamodb_table" "data_table" {
-  name           = "nfl-data"
-  billing_mode   = "PROVISIONED"
-  read_capacity  = 5
-  write_capacity = 5
-  hash_key       = "id"
+  name             = "nfl-data"
+  billing_mode     = "PROVISIONED"
+  read_capacity    = 5
+  write_capacity   = 5
+  hash_key         = "id"
+  stream_enabled   = true
+  stream_view_type = "NEW_IMAGE"
 
   attribute {
     name = "id"
@@ -49,6 +51,7 @@ resource "aws_dynamodb_table" "data_table" {
   }
 
 }
+
 
 # resource "aws_s3_bucket" "b" {
 #   bucket = "s3-website-test.hashicorp.com"

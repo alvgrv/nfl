@@ -22,8 +22,8 @@ LOGGER.setLevel(logging.INFO)
 SCHEDULE_TABLE = get_dynamodb_table(os.environ["SCHEDULE_TABLE"])
 DATA_TABLE = get_dynamodb_table(os.environ["DATA_TABLE"])
 
-# @app.schedule("rate(1 hour)")
-@app.lambda_function()
+
+@app.schedule("rate(2 hours)")
 def ticker(_event, _context):
     """Cron function checking for new data at source."""
     if not len(SCHEDULE_TABLE.scan()["Items"]):
@@ -64,3 +64,8 @@ def scraper(event):
     )
 
     LOGGER.info("Operation complete")
+
+
+@app.on_dynamodb_record(os.environ["DATA_TABLE_STREAM"])
+def site_gen(event):
+    print("Success")

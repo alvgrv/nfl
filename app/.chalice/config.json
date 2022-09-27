@@ -13,11 +13,17 @@
       "lambda_timeout": 60,
       "autogen_policy": false,
       "iam_policy_file": "policy.json"
+    },
+    "site_gen": {
+      "lambda_timeout": 60,
+      "autogen_policy": false,
+      "iam_policy_file": "policy.json"
     }
   },
   "environment_variables": {
     "SCHEDULE_TABLE": "nfl-schedule",
     "DATA_TABLE": "nfl-data",
+    "DATA_TABLE_STREAM": "${aws_dynamodb_table.data_table.stream_arn}",
     "SCRAPE_TARGET": "https://www.pro-football-reference.com"
   }
 }
