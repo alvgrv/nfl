@@ -46,6 +46,15 @@
       ],
       "Resource": "arn:aws:events:eu-west-1:094758758809:event-bus/default",
       "Effect": "Allow"
+    },
+    {
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "${aws_s3_bucket.site_bucket.arn}/*",
+      "Effect": "Allow"
     }
   ]
 }

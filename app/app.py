@@ -13,7 +13,7 @@ from chalicelib.utils import (
 )
 
 from chalice import Chalice
-from jinja2 import Environment
+from jinja2 import Environment as JinjaEnv
 
 app = Chalice(app_name="nfl")
 
@@ -52,7 +52,7 @@ def ticker(_event, _context):
 
 
 @app.on_cw_event({"detail-type": ["game_to_scrape"]})
-def scraper(event):
+def scraper(event, _context):
     """Event-driven scraper, takes one game_id."""
     game_id = event.to_dict()["detail"]["game_id"]
 
@@ -70,29 +70,36 @@ def scraper(event):
 @app.on_dynamodb_record(os.environ["DATA_TABLE_STREAM"])
 def site_gen(event):
 
-    template = """
-<!DOCTYPE html>
-<html lang="en">
+    # event_dict = event.to_dict()
+    # new_row = event_dict["Records"][0]["dynamodb"]["NewImage"]
+    # new_row = {k: v["S"] for k, v in new_row.items()}
 
-<head></head>
+    response = SCHEDULE_TABLE.scan()
+    weeks_in_data = set(d["week"] for d in response["Items"] if d["has_data"] == True)
 
-<body>                        
-<p class='min'>{{ game.date }}</p>
-<p class='min'>{{ game.time }}</p>
-<p>{{ game.away_team }}</p>
-<p>{{ game.home_team }}</p>
-<p class='min'>{{ game.fun_index }}</p></body>
-</html>
-    """
+    # if new_row['week'] > max(weeks_in_data):
+    #     # overwrite previous with current
 
-    env = Environment()
-    tmpl = env.from_string(template)
+    # write new current html
 
-    game_scraper = GameScraper("202209080ram")
-    game_dict = game_scraper.game_dict
+    response = DATA_TABLE.scan()
+    current_week_games = [
+        d
+        for d in response["Items"]
+        if d["week"] == max(weeks_in_data, key=lambda a: int(a))
+    ]
 
-    print(tmpl.render(game=game_dict))
+    from chalicelib.utils import page_template_string
 
+    env = JinjaEnv()
+    template = env.from_string(page_template_string)
+    rendered_html = template.render(games=current_week_games)
 
-if __name__ == "__main__":
-    site_gen("", "")
+    with open("/tmp/current.html", "w+") as file:
+        file.write(rendered_html)
+
+    import boto3
+
+    s3 = boto3.resource("s3")
+    site_bucket = s3.Bucket(os.environ["SITE_BUCKET_NAME"])
+    site_bucket.upload_file("/tmp/current.html", "current.html")

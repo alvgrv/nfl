@@ -54,6 +54,7 @@ resource "aws_dynamodb_table" "data_table" {
 
 
 resource "aws_s3_bucket" "site_bucket" {
+
   bucket = "nfl-site-8acf57f2-f8f5-4a05-ab52-4674f2837beb"
 
 }
@@ -68,7 +69,7 @@ resource "aws_s3_bucket_website_configuration" "site_bucket" {
   bucket = aws_s3_bucket.site_bucket.bucket
 
   index_document {
-    suffix = "index.html"
+    suffix = "current.html"
   }
 
   error_document {
