@@ -13,6 +13,7 @@ def get_dynamodb_table(table_name):
 
 
 def get_current_season():
+    """Returns int"""
     if dt.datetime.now().month >= 7:
         return dt.datetime.now().year
     return dt.datetime.now().year - 1

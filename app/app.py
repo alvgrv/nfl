@@ -1,9 +1,11 @@
 import logging
 import os
 
+from chalicelib.site_gen import SiteGenerator
 from chalicelib.scraperlib import GameScraper
 from chalicelib.utils import (
     add_dict_to_dynamodb,
+    get_current_season,
     get_dynamodb_table,
     populate_empty_schedule,
     new_seasons_at_source,
@@ -68,38 +70,6 @@ def scraper(event, _context):
 
 
 @app.on_dynamodb_record(os.environ["DATA_TABLE_STREAM"])
-def site_gen(event):
-
-    # event_dict = event.to_dict()
-    # new_row = event_dict["Records"][0]["dynamodb"]["NewImage"]
-    # new_row = {k: v["S"] for k, v in new_row.items()}
-
-    response = SCHEDULE_TABLE.scan()
-    weeks_in_data = set(d["week"] for d in response["Items"] if d["has_data"] == True)
-
-    # if new_row['week'] > max(weeks_in_data):
-    #     # overwrite previous with current
-
-    # write new current html
-
-    response = DATA_TABLE.scan()
-    current_week_games = [
-        d
-        for d in response["Items"]
-        if d["week"] == max(weeks_in_data, key=lambda a: int(a))
-    ]
-
-    from chalicelib.utils import page_template_string
-
-    env = JinjaEnv()
-    template = env.from_string(page_template_string)
-    rendered_html = template.render(games=current_week_games)
-
-    with open("/tmp/current.html", "w+") as file:
-        file.write(rendered_html)
-
-    import boto3
-
-    s3 = boto3.resource("s3")
-    site_bucket = s3.Bucket(os.environ["SITE_BUCKET_NAME"])
-    site_bucket.upload_file("/tmp/current.html", "current.html")
+def site_gen(_event):
+    site_generator = SiteGenerator()
+    site_generator.run()
