@@ -1,75 +1,55 @@
 import logging
 import os
 
-from chalicelib.site_gen import SiteGenerator
-from chalicelib.scraperlib import GameScraper
+from chalicelib.dbinitlib import DatabaseInit
+from chalicelib.tickerlib import Ticker
+from chalicelib.sitegenlib import SiteGenerator
+from chalicelib.scraperlib import EventScraper
 from chalicelib.utils import (
-    add_dict_to_dynamodb,
-    get_current_season,
     get_dynamodb_table,
-    populate_empty_schedule,
-    new_seasons_at_source,
-    get_game_ids_to_scrape,
-    put_onto_eventbridge,
-    scrape_season_schedule_into_db,
 )
-
 from chalice import Chalice
-from jinja2 import Environment as JinjaEnv
 
 app = Chalice(app_name="nfl")
 
 LOGGER = app.log
 LOGGER.setLevel(logging.INFO)
 
-SCHEDULE_TABLE = get_dynamodb_table(os.environ["SCHEDULE_TABLE"])
-DATA_TABLE = get_dynamodb_table(os.environ["DATA_TABLE"])
+
+@app.schedule("cron(0 0 1 7 *)")
+def db_init_function():
+    dbinit = DatabaseInit()
+    dbinit.run()
+
+
+@app.lambda_function()
+def manual_db_init_function():
+    dbinit = DatabaseInit()
+    dbinit.run()
 
 
 @app.schedule("rate(2 hours)")
-def ticker(_event, _context):
+def ticker_function(_event):
     """Cron function checking for new data at source."""
-    if not len(SCHEDULE_TABLE.scan()["Items"]):
-        LOGGER.info("Schedule table empty, populating...")
-        populate_empty_schedule(SCHEDULE_TABLE)
-
-    LOGGER.info("Checking years up to date...")
-    if new_seasons_at_source(SCHEDULE_TABLE):
-        LOGGER.info("New season(s) found at source")
-        for season in new_seasons_at_source(SCHEDULE_TABLE):
-            LOGGER.info("Scraping season %s schedule...", season)
-            scrape_season_schedule_into_db(season, SCHEDULE_TABLE)
-
-    LOGGER.info("Checking new games to scrape...")
-    game_ids_to_scrape = get_game_ids_to_scrape(SCHEDULE_TABLE)
-    if game_ids_to_scrape:
-        LOGGER.info(
-            "%s new games found to scrape, putting onto EventBridge...",
-            len(game_ids_to_scrape),
-        )
-        for game_id in game_ids_to_scrape:
-            put_onto_eventbridge("nfl-ticker", dict(game_id=game_id), "game_to_scrape")
-
-    LOGGER.info("Ticker checks complete")
+    ticker = Ticker()
+    ticker.run()
 
 
+@app.lambda_function()
+def manual_ticker_function():
+    ticker = Ticker()
+    ticker.run()
+
+
+@app.schedule("rate(2 hours)")
 @app.on_cw_event({"detail-type": ["game_to_scrape"]})
-def scraper(event, _context):
+def scraper_function(event):
     """Event-driven scraper, takes one game_id."""
-    game_id = event.to_dict()["detail"]["game_id"]
-
-    LOGGER.info("Event received, scraping game %s", game_id)
-    game_scraper = GameScraper(game_id)
-
-    LOGGER.info("Data scraped, putting into DynamoDB")
-    add_dict_to_dynamodb(
-        game_scraper.game_dict, get_dynamodb_table(os.environ["DATA_TABLE"])
-    )
-
-    LOGGER.info("Operation complete")
+    game_event_scraper = EventScraper(event)
+    game_event_scraper.run()
 
 
 @app.on_dynamodb_record(os.environ["DATA_TABLE_STREAM"])
-def site_gen(_event):
+def site_gen_function(_event):
     site_generator = SiteGenerator()
     site_generator.run()

@@ -5,6 +5,8 @@ import re
 import math
 import os
 import pandas as pd
+from .utils import get_dynamodb_table
+from . import LOGGER
 
 
 class ScheduleScraper:
@@ -50,14 +52,18 @@ class ScheduleScraper:
             "id season week day date time away home url has_data has_been_scraped".split()
         ].copy()
 
-    @property
-    def seasons_at_source(self):
-        req = requests.get(f"{self.scrape_target}/years")
+    @staticmethod
+    def get_all_seasons_at_source():
+        req = requests.get(f"{os.environ['SCRAPE_TARGET']}/years")
         soup = BeautifulSoup(req.text, "lxml")
         years_div = soup.find("table", id="years")
         years_df = pd.read_html(str(years_div))[0]
         years = years_df["Year"].drop_duplicates().to_list()
         return sorted(list(set([n for n in years])))
+
+    @property
+    def seasons_at_source(self):
+        return self.get_all_seasons_at_source()
 
 
 class GameScraper:
@@ -301,3 +307,19 @@ class GameScraper:
         }
 
         return game_dict
+
+
+class EventScraper:
+    def __init__(self, event):
+        self.game_id = event.to_dict()["detail"]["game_id"]
+        self.game_scraper = GameScraper(self.game_id)
+        self.data_table = get_dynamodb_table(os.environ["DATA_TABLE"])
+
+    @staticmethod
+    def add_dict_into_db(dict_, table):
+        table.put_item(Item=dict_)
+
+    def run(self):
+        LOGGER.info("Event received, scraping game %s", self.game_id)
+        self.add_dict_into_db(self.game_scraper, self.data_table)
+        LOGGER.info("Operation complete")

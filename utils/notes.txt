@@ -11,6 +11,7 @@
 - refactor app.py to point to controllers for ticker, scraper
 - refactor all those many utils
 - is dynamo the right kind of database? could be using rds + sqlalchemy
+- add pylint, other tooling
 
 
 CURRENT.HTML (AKA INDEX)

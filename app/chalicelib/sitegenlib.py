@@ -51,15 +51,17 @@ class SiteGenerator:
     @property
     def current_week_html(self):
         current_week_games = [
-            d for d in self.data_table_results if d["week"] == self.current_week
+            d for d in self.data_table_results if d["week"] == str(self.current_week)
         ]
+        sorted(current_week_games, key=lambda d: d["fun_index"], reverse=True)
         return self.page_template.render(games=current_week_games)
 
     @property
     def previous_week_html(self):
         previous_week_games = [
-            d for d in self.data_table_results if d["week"] == self.previous_week
+            d for d in self.data_table_results if d["week"] == str(self.previous_week)
         ]
+        sorted(previous_week_games, key=lambda d: d["fun_index"], reverse=True)
         return self.page_template.render(games=previous_week_games)
 
     @property
