@@ -59,7 +59,7 @@ class ScheduleScraper:
         years_div = soup.find("table", id="years")
         years_df = pd.read_html(str(years_div))[0]
         years = years_df["Year"].drop_duplicates().to_list()
-        return sorted(list(set([n for n in years])))
+        return sorted(list(set(years)))
 
     @property
     def seasons_at_source(self):
@@ -309,17 +309,16 @@ class GameScraper:
         return game_dict
 
 
-class EventScraper:
+class GamesEventScraper:
     def __init__(self, event):
-        self.game_id = event.to_dict()["detail"]["game_id"]
-        self.game_scraper = GameScraper(self.game_id)
+        self.game_ids = event.to_dict()["detail"]["game_ids"]
+        self.game_scrapers = [GameScraper(game_id) for game_id in self.game_ids]
         self.data_table = get_dynamodb_table(os.environ["DATA_TABLE"])
 
-    @staticmethod
-    def add_dict_into_db(dict_, table):
-        table.put_item(Item=dict_)
-
     def run(self):
-        LOGGER.info("Event received, scraping game %s", self.game_id)
-        self.add_dict_into_db(self.game_scraper, self.data_table)
+        LOGGER.info("Event received")
+        with self.data_table.batch_writer() as batch:
+            for game in self.game_scrapers:
+                LOGGER.info("Scraping game %s", game.game_id)
+                batch.put_item(Item=game.game_dict)
         LOGGER.info("Operation complete")

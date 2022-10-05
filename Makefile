@@ -9,7 +9,7 @@ rmvenv:
 package:
 	cd app; poetry export --without-hashes --format requirements.txt --output requirements.txt
 	cd app; poetry run chalice package --pkg-format terraform ../infra
-	python utils/hack_terraform.py
+	python utils/terraforming.py
 
 plan:
 	cd infra; terraform plan
@@ -17,7 +17,11 @@ plan:
 apply:
 	cd infra; terraform apply -auto-approve
 
-destroy:
+empty-s3:
+	aws s3 rm s3://nfl-site-8acf57f2-f8f5-4a05-ab52-4674f2837beb/current.html
+	aws s3 rm s3://nfl-site-8acf57f2-f8f5-4a05-ab52-4674f2837beb/previous.html
+
+destroy: empty-s3
 	cd infra; terraform apply -destroy -auto-approve
 
 clean:
@@ -25,6 +29,7 @@ clean:
 	rm -rf ./app/requirements.txt
 	rm -rf ./infra/chalice.tf.json
 	rm -rf ./infra/deployment.zip
+	rm -rf ./infra/layer-deployment.zip
 
 deploy: package plan apply
 

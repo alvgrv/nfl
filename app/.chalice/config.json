@@ -4,27 +4,42 @@
   "api_gateway_stage": "api",
   "automatic_layer": true,
   "lambda_functions": {
-    "ticker": {
+    "db_init_function": {
       "lambda_timeout": 240,
       "autogen_policy": false,
       "iam_policy_file": "policy.json"
     },
-    "scraper": {
+    "manual_db_init_function": {
+      "lambda_timeout": 240,
+      "autogen_policy": false,
+      "iam_policy_file": "policy.json"
+    },
+    "ticker_function": {
       "lambda_timeout": 60,
       "autogen_policy": false,
       "iam_policy_file": "policy.json"
     },
-    "site_gen": {
+    "manual_ticker_function": {
+      "lambda_timeout": 60,
+      "autogen_policy": false,
+      "iam_policy_file": "policy.json"
+    },
+    "scraper_function": {
+      "lambda_timeout": 60,
+      "autogen_policy": false,
+      "iam_policy_file": "policy.json"
+    },
+    "site_gen_function": {
       "lambda_timeout": 60,
       "autogen_policy": false,
       "iam_policy_file": "policy.json"
     }
   },
   "environment_variables": {
-    "SCHEDULE_TABLE": "nfl-schedule",
-    "DATA_TABLE": "nfl-data",
-    "DATA_TABLE_STREAM": "${aws_dynamodb_table.data_table.stream_arn}",
     "SCRAPE_TARGET": "https://www.pro-football-reference.com",
+    "SCHEDULE_TABLE": "${aws_dynamodb_table.schedule_table.name}",
+    "DATA_TABLE": "${aws_dynamodb_table.data_table.name}",
+    "DATA_TABLE_STREAM": "${aws_dynamodb_table.data_table.stream_arn}",
     "SITE_BUCKET_ARN": "${aws_s3_bucket.site_bucket.arn}",
     "SITE_BUCKET_NAME": "${aws_s3_bucket.site_bucket.id}"
   }

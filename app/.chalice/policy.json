@@ -13,13 +13,12 @@
         "logs:PutLogEvents"
       ],
       "Resource": [
-        "arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-ticker:*",
-        "arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-scraper:*",
-        "arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/nfl-dev-site_gen:*"
+        "arn:aws:logs:eu-west-1:094758758809:log-group:/aws/lambda/*"
       ]
     },
     {
       "Effect": "Allow",
+      "Sid": "DynamoDB",
       "Action": [
         "dynamodb:BatchGet*",
         "dynamodb:DescribeStream",
@@ -35,9 +34,9 @@
         "dynamodb:ListStreams"
       ],
       "Resource": [
-        "arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-schedule",
-        "arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-data",
-        "arn:aws:dynamodb:eu-west-1:094758758809:table/nfl-data/stream/*"
+        "${aws_dynamodb_table.data_table.arn}",
+        "${aws_dynamodb_table.schedule_table.arn}",
+        "arn:aws:dynamodb:eu-west-1:094758758809:table/${aws_dynamodb_table.data_table.name}/stream/*"
       ]
     },
     {

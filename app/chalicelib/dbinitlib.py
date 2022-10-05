@@ -19,8 +19,10 @@ class DatabaseInit:
         seasons_in_db = sorted(
             list(set([int(d["season"][:4]) for d in self.schedule_table_results]))
         )
+        print(seasons_in_db)
         seasons_at_source = ScheduleScraper.get_all_seasons_at_source()
-        num_new_seasons = max(seasons_at_source) - max(seasons_in_db)
+        print(seasons_at_source)
+        num_new_seasons = max(seasons_at_source, 0) - max(seasons_in_db)
         if num_new_seasons > 0:
             return seasons_at_source[-num_new_seasons:]
 
@@ -36,18 +38,18 @@ class DatabaseInit:
     def populate_empty_schedule(self, back_seasons=0):
         seasons = [self.current_season]
         if back_seasons:
-            seasons.extend([self.current_season - n for n in range(seasons + 1)])
+            seasons.extend([self.current_season - n for n in range(back_seasons + 1)])
         for season in seasons:
-            self.scrape_season_schedule(season, self.schedule_table)
+            self.scrape_season_schedule(season)
 
     def run(self):
-        if not self.schedule_table_results:
+        if self.schedule_table_results:
+            LOGGER.info("Checking years up to date...")
+            if self.new_seasons_at_source:
+                LOGGER.info("New season(s) found at source")
+                for season in self.new_seasons_at_source:
+                    LOGGER.info("Scraping season %s schedule...", season)
+                    self.scrape_season_schedule(season)
+        else:
             LOGGER.info("Schedule table empty, populating...")
             self.populate_empty_schedule()
-
-        LOGGER.info("Checking years up to date...")
-        if self.new_seasons_at_source:
-            LOGGER.info("New season(s) found at source")
-            for season in self.new_seasons_at_source:
-                LOGGER.info("Scraping season %s schedule...", season)
-                self.scrape_season_schedule(season)

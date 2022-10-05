@@ -1,3 +1,3 @@
 import logging
 
-LOGGER = logging.getLogger("app")
+LOGGER = logging.getLogger("nfl")

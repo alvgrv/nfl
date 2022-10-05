@@ -21,28 +21,29 @@ class Ticker:
                 d["id"]
                 for d in self.schedule_table_results
                 if all([d["has_data"], not d["has_been_scraped"]])
-            ]
+            ]  # TODO no mechanism for updating has_data either?
         )
 
     @staticmethod
-    def put_game_onto_eventbridge(game_id):
+    def put_games_onto_eventbridge(game_ids):
         eb = boto3.client("events")
         response = eb.put_events(
             Entries=[
                 {
                     "Source": "ticker",
-                    "Detail": json.dumps(dict(game_id=game_id)),
-                    "DetailType": "game_to_scrape",
+                    "Detail": json.dumps(dict(game_ids=game_ids)),
+                    "DetailType": "games_to_scrape",
                 }
             ]
         )
         if response["FailedEntryCount"]:
             LOGGER.info("Event put failed")
-        LOGGER.info("Game %s put onto EventBridge", game_id)
+            return
+        LOGGER.info("Games IDs put onto EventBridge:")
+        for g in game_ids:
+            LOGGER.info(g)
 
     def run(self):
-        LOGGER.info("Checking for new games to scrape...")
-        for game_id in self.game_ids_to_scrape:
-            LOGGER("%s new games to scrape, queuing...")
-            self.put_game_onto_eventbridge(game_id)
-            # TODO there's no mechanism for updating the schedule_table.has_been_scraped?
+        LOGGER.info("%s new games to scrape, queuing...")
+        self.put_games_onto_eventbridge(self.game_ids_to_scrape)
+        # TODO there's no mechanism for updating the schedule_table.has_been_scraped?
