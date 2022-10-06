@@ -77,7 +77,7 @@
                 "tags": {
                     "aws-chalice": "version=1.27.3:stage=dev:app=nfl"
                 },
-                "timeout": 240,
+                "timeout": 60,
                 "source_code_hash": "${filebase64sha256(\"${path.module}/deployment.zip\")}",
                 "filename": "${path.module}/deployment.zip",
                 "environment": {
@@ -129,7 +129,7 @@
                 "tags": {
                     "aws-chalice": "version=1.27.3:stage=dev:app=nfl"
                 },
-                "timeout": 240,
+                "timeout": 60,
                 "source_code_hash": "${filebase64sha256(\"${path.module}/deployment.zip\")}",
                 "filename": "${path.module}/deployment.zip",
                 "environment": {
@@ -239,7 +239,7 @@
             },
             "scraper_function-event": {
                 "name": "scraper_function-event",
-                "event_pattern": "{\"detail-type\": [\"games_to_scrape\"]}"
+                "event_pattern": "{\"detail-type\": [\"game_to_scrape\"]}"
             }
         },
         "aws_cloudwatch_event_target": {

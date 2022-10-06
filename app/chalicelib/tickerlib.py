@@ -27,23 +27,23 @@ class Ticker:
     @staticmethod
     def put_games_onto_eventbridge(game_ids):
         eb = boto3.client("events")
-        response = eb.put_events(
-            Entries=[
-                {
-                    "Source": "ticker",
-                    "Detail": json.dumps(dict(game_ids=game_ids)),
-                    "DetailType": "games_to_scrape",
-                }
-            ]
-        )
-        if response["FailedEntryCount"]:
-            LOGGER.info("Event put failed")
-            return
-        LOGGER.info("Games IDs put onto EventBridge:")
-        for g in game_ids:
-            LOGGER.info(g)
+        for gid in game_ids:
+            response = eb.put_events(
+                Entries=[
+                    {
+                        "Source": "ticker",
+                        "Detail": json.dumps(dict(game_id=gid)),
+                        "DetailType": "game_to_scrape",
+                    }
+                ]
+            )
+            if response["FailedEntryCount"]:
+                LOGGER.error("Event put failed")
+                LOGGER.error(response["Entries"])
+                return
+            LOGGER.info("Game ID %s put onto EventBridge", gid)
 
     def run(self):
-        LOGGER.info("%s new games to scrape, queuing...")
+        LOGGER.info("%s new games to scrape, queuing...", len(self.game_ids_to_scrape))
         self.put_games_onto_eventbridge(self.game_ids_to_scrape)
         # TODO there's no mechanism for updating the schedule_table.has_been_scraped?

@@ -1,3 +1,4 @@
+from .tickerlib import Ticker
 from .utils import get_dynamodb_table, get_current_season
 from .scraperlib import ScheduleScraper
 from . import LOGGER
@@ -16,13 +17,12 @@ class DatabaseInit:
 
     @property
     def new_seasons_at_source(self):
-        seasons_in_db = sorted(
-            list(set([int(d["season"][:4]) for d in self.schedule_table_results]))
+        max_season_at_db = max(
+            set([int(d["season"][:4]) for d in self.schedule_table_results]), default=0
         )
-        print(seasons_in_db)
         seasons_at_source = ScheduleScraper.get_all_seasons_at_source()
-        print(seasons_at_source)
-        num_new_seasons = max(seasons_at_source, 0) - max(seasons_in_db)
+        max_season_at_source = max(seasons_at_source, default=0)
+        num_new_seasons = max_season_at_db - max_season_at_source
         if num_new_seasons > 0:
             return seasons_at_source[-num_new_seasons:]
 
@@ -53,3 +53,6 @@ class DatabaseInit:
         else:
             LOGGER.info("Schedule table empty, populating...")
             self.populate_empty_schedule()
+
+        ticker = Ticker()
+        ticker.run()

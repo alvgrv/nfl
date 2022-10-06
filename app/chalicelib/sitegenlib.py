@@ -70,12 +70,14 @@ class SiteGenerator:
         return s3.Bucket(os.environ["SITE_BUCKET_NAME"])
 
     def run(self):
+        LOGGER.info("Event received")
+
+        LOGGER.info("Generating current week %s", self.current_week)
         with open("/tmp/current.html", "w+") as file:
             file.write(self.current_week_html)
-
         self.site_bucket.upload_file("/tmp/current.html", "current.html")
 
+        LOGGER.info("Generating previous week %s", self.previous_week)
         with open("/tmp/previous.html", "w+") as file:
             file.write(self.previous_week_html)
-
         self.site_bucket.upload_file("/tmp/previous.html", "previous.html")

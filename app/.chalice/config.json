@@ -5,32 +5,26 @@
   "automatic_layer": true,
   "lambda_functions": {
     "db_init_function": {
-      "lambda_timeout": 240,
       "autogen_policy": false,
       "iam_policy_file": "policy.json"
     },
     "manual_db_init_function": {
-      "lambda_timeout": 240,
       "autogen_policy": false,
       "iam_policy_file": "policy.json"
     },
     "ticker_function": {
-      "lambda_timeout": 60,
       "autogen_policy": false,
       "iam_policy_file": "policy.json"
     },
     "manual_ticker_function": {
-      "lambda_timeout": 60,
       "autogen_policy": false,
       "iam_policy_file": "policy.json"
     },
     "scraper_function": {
-      "lambda_timeout": 60,
       "autogen_policy": false,
       "iam_policy_file": "policy.json"
     },
     "site_gen_function": {
-      "lambda_timeout": 60,
       "autogen_policy": false,
       "iam_policy_file": "policy.json"
     }

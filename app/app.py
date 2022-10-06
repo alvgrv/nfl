@@ -4,7 +4,7 @@ import os
 from chalicelib.dbinitlib import DatabaseInit
 from chalicelib.tickerlib import Ticker
 from chalicelib.sitegenlib import SiteGenerator
-from chalicelib.scraperlib import GamesEventScraper
+from chalicelib.scraperlib import GameEventScraper, GameScraper
 from chalicelib.utils import (
     get_dynamodb_table,
 )
@@ -43,10 +43,10 @@ def manual_ticker_function(_event, _context):
     command.run()
 
 
-@app.on_cw_event({"detail-type": ["games_to_scrape"]})
+@app.on_cw_event({"detail-type": ["game_to_scrape"]})
 def scraper_function(event):
     """Event-driven scraper, takes one game_id."""
-    command = GamesEventScraper(event)
+    command = GameEventScraper(event)
     command.run()
 
 
