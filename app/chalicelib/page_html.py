@@ -1,21 +1,6 @@
-import datetime as dt
+"""Page html template string."""
 
-import boto3
-
-
-def get_dynamodb_table(table_name):
-    ddb = boto3.resource("dynamodb")
-    return ddb.Table(table_name)
-
-
-def get_current_season():
-    """Returns int"""
-    if dt.datetime.now().month >= 7:
-        return dt.datetime.now().year
-    return dt.datetime.now().year - 1
-
-
-page_template_string = """
+PAGE_TEMPLATE_STRING = """
 <!DOCTYPE html>
 <html lang="en">
 

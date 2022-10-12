@@ -1,13 +1,14 @@
+"""Entry point for Chalice app."""
+
 import logging
 import os
+
+from chalice import Chalice
 
 from chalicelib.table import DataTable
 from chalicelib.ticker import Ticker
 from chalicelib.sitegen import SiteGenerator
-from chalicelib.scraper import GameScraperDirector, ScheduleScraper
-
-
-from chalice import Chalice
+from chalicelib.scraper import GameScraper, GameScraperDirector, ScheduleScraper
 
 app = Chalice(app_name="nfl")
 
@@ -31,12 +32,14 @@ def manual_ticker_function(_event, _context):
 
 @app.on_cw_event({"detail-type": ["game_to_scrape"]})
 def scraper_function(event):
-    """Event-driven scraper, takes one game_id."""
-    command = GameScraperDirector(event, DataTable())
+    """Event-driven scraper, takes one game_id and scrapes that game into the table"""
+    game_id = event.to_dict()["detail"]["game_id"]
+    command = GameScraperDirector(DataTable(), GameScraper(game_id))
     command.run()
 
 
 @app.on_dynamodb_record(os.environ["DATA_TABLE_STREAM"])
 def site_gen_function(_event):
+    """Event-driven site generator, updates html files in S3 on new table row."""
     command = SiteGenerator(DataTable())
     command.run()

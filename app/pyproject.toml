@@ -24,7 +24,13 @@ jupyter = "^1.0.0"
 jupyterlab = "^3.4.7"
 pylint = "^2.15.4"
 
-
+[tool.pylint.messages_control]
+max-line-length = 120
+disable = [
+  'E0401', # import errors
+  'E0611', # more import errors
+  'C0103', # variable names
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
