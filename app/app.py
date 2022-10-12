@@ -1,10 +1,11 @@
 import logging
 import os
 
-from chalicelib.dbinitlib import DatabaseInit
+from chalicelib.data_table import DataTable
 from chalicelib.tickerlib import Ticker
 from chalicelib.sitegenlib import SiteGenerator
-from chalicelib.scraperlib import GameEventScraper
+from chalicelib.scraperlib import GameScraperDirector, ScheduleScraper
+
 
 from chalice import Chalice
 
@@ -14,29 +15,17 @@ LOGGER = app.log
 LOGGER.setLevel(logging.INFO)
 
 
-@app.schedule("cron(0 0 1 7 ? *)")  # min hour dom mth dow year
-def db_init_function(_event):
-    command = DatabaseInit()
-    command.run()
-
-
-@app.lambda_function()
-def manual_db_init_function(_event, _context):
-    command = DatabaseInit()
-    command.run()
-
-
 @app.schedule("rate(2 hours)")
 def ticker_function(_event):
     """Cron function checking for new data at source."""
-    command = Ticker()
+    command = Ticker(DataTable(), ScheduleScraper(ScheduleScraper.get_current_season()))
     command.run()
 
 
 @app.on_cw_event({"detail-type": ["game_to_scrape"]})
 def scraper_function(event):
     """Event-driven scraper, takes one game_id."""
-    command = GameEventScraper(event)
+    command = GameScraperDirector(event)
     command.run()
 
 

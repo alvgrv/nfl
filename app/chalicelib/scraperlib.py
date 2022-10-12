@@ -14,22 +14,41 @@ class ScheduleScraper:
         self.season = season
         self.scrape_target = os.environ["SCRAPE_TARGET"]
 
+    @staticmethod
+    def get_current_season():
+        """Returns int"""
+        if dt.datetime.now().month >= 7:
+            return dt.datetime.now().year
+        return dt.datetime.now().year - 1
+
+    @property
+    def schedule_div(self):
+        req = requests.get(f"{self.scrape_target}/years/{self.season}/games.htm")
+        soup = BeautifulSoup(req.text, "lxml")
+        return soup.find("table", id="games")
+
+    @property
+    def games_with_data(self):
+        game_ids = []
+        for link in self.schedule_div.find_all("a"):
+            if link.text == "boxscore":
+                game_id = re.findall("\d{9}\D{3}", link.get("href"))[0]
+                game_ids.append(game_id)
+        return game_ids
+
     @property
     def season_schedule(self):
         """Season schedule as a dataframe"""
-        req = requests.get(f"{self.scrape_target}/years/{self.season}/games.htm")
-        soup = BeautifulSoup(req.text, "lxml")
-        schedule_div = soup.find("table", id="games")
         game_urls = []
         game_ids = []
-        for link in schedule_div.find_all("a"):
+        for link in self.schedule_div.find_all("a"):
             if link.text == "boxscore" or link.text == "preview":
                 game_url = link.get("href")
                 game_urls.append(self.scrape_target + game_url)
                 game_id = re.findall("\d{9}\D{3}", game_url)[0]
                 game_ids.append(game_id)
 
-        schedule = pd.read_html(str(schedule_div))[0]
+        schedule = pd.read_html(str(self.schedule_div))[0]
         schedule = schedule[schedule["Day"].isin("Mon Tue Wed Thu Fri Sat Sun".split())]
         schedule = schedule.copy().reset_index(drop=True)
         schedule.columns = (
@@ -309,7 +328,7 @@ class GameScraper:
         return game_dict
 
 
-class GameEventScraper:
+class GameScraperDirector:
     def __init__(self, event):
         self.game_id = event.to_dict()["detail"]["game_id"]
         self.game_scraper = GameScraper(self.game_id)

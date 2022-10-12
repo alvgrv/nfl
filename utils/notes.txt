@@ -1,7 +1,17 @@
 
 short
 
-- add mechanism for updating has_data, has_been_scraped
+- add mechanism for updating has_data, has_been_scraped\
+
+get rid of data, scraped (do i even need a schedule at all????)
+
+**
+ticker reads boxscore/preview from site
+if boxscore and not in data table pks, scrape
+**
+
+
+
 - add pylint, other tooling
 
 mid
@@ -15,3 +25,4 @@ mid
 long
 
 - add emailer to tell me when new games
+

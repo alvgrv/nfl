@@ -21,21 +21,6 @@ resource "aws_vpc" "private_vpc" {
   cidr_block = "10.0.0.0/16"
 }
 
-resource "aws_dynamodb_table" "schedule_table" {
-  name         = "nfl-schedule"
-  billing_mode = "PROVISIONED"
-  # total capacity units = 25 read + 25 write across all DDB
-  read_capacity  = 5
-  write_capacity = 5
-  hash_key       = "id"
-
-  attribute {
-    name = "id"
-    type = "S"
-  }
-
-}
-
 resource "aws_dynamodb_table" "data_table" {
   name             = "nfl-data"
   billing_mode     = "PROVISIONED"
