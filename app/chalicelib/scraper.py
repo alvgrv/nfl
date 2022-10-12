@@ -5,6 +5,8 @@ import re
 import math
 import os
 import pandas as pd
+
+from .table import DataTable
 from .utils import get_dynamodb_table
 from . import LOGGER
 
@@ -329,12 +331,12 @@ class GameScraper:
 
 
 class GameScraperDirector:
-    def __init__(self, event):
+    def __init__(self, event, data_table: DataTable):
         self.game_id = event.to_dict()["detail"]["game_id"]
         self.game_scraper = GameScraper(self.game_id)
-        self.data_table = get_dynamodb_table(os.environ["DATA_TABLE"])
+        self.data_table = data_table
 
     def run(self):
         LOGGER.info("Event received, scraping game %s", self.game_id)
-        self.data_table.put_item(Item=self.game_scraper.game_dict)
+        self.data_table.table.put_item(Item=self.game_scraper.game_dict)
         LOGGER.info("Complete")

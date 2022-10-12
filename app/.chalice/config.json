@@ -4,14 +4,6 @@
   "api_gateway_stage": "api",
   "automatic_layer": true,
   "lambda_functions": {
-    "db_init_function": {
-      "autogen_policy": false,
-      "iam_policy_file": "policy.json"
-    },
-    "manual_db_init_function": {
-      "autogen_policy": false,
-      "iam_policy_file": "policy.json"
-    },
     "ticker_function": {
       "autogen_policy": false,
       "iam_policy_file": "policy.json"
@@ -31,7 +23,6 @@
   },
   "environment_variables": {
     "SCRAPE_TARGET": "https://www.pro-football-reference.com",
-    "SCHEDULE_TABLE": "${aws_dynamodb_table.schedule_table.name}",
     "DATA_TABLE": "${aws_dynamodb_table.data_table.name}",
     "DATA_TABLE_STREAM": "${aws_dynamodb_table.data_table.stream_arn}",
     "SITE_BUCKET_ARN": "${aws_s3_bucket.site_bucket.arn}",

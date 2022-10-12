@@ -3,8 +3,8 @@ from .utils import get_dynamodb_table
 import boto3
 from . import LOGGER
 import json
-from .data_table import DataTable
-from .scraperlib import ScheduleScraper
+from .table import DataTable
+from .scraper import ScheduleScraper
 
 
 class Ticker:
@@ -17,7 +17,7 @@ class Ticker:
         return [
             g
             for g in sorted(self.schedule_scraper.games_with_data)
-            if g not in self.data_table.match_ids
+            if g not in self.data_table.game_ids
         ]
 
     @staticmethod

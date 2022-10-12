@@ -35,7 +35,6 @@
       ],
       "Resource": [
         "${aws_dynamodb_table.data_table.arn}",
-        "${aws_dynamodb_table.schedule_table.arn}",
         "arn:aws:dynamodb:eu-west-1:094758758809:table/${aws_dynamodb_table.data_table.name}/stream/*"
       ]
     },
