@@ -25,7 +25,7 @@ def ticker_function(_event):
 
 @app.lambda_function()
 def manual_ticker_function(_event, _context):
-    """Cron function checking for new data at source."""
+    """Manually-triggered function checking for new data at source."""
     command = Ticker(DataTable(), ScheduleScraper(ScheduleScraper.get_current_season()))
     command.run()
 

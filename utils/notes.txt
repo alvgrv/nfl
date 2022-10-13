@@ -13,6 +13,7 @@ if boxscore and not in data table pks, scrape
 
 
 - add pylint, other tooling
+- current season html to deal with no previous week for week 1
 
 mid
 

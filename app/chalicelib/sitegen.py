@@ -24,7 +24,7 @@ class SiteGenerator:
     @property
     def current_week(self):
         """Return the highest week number in the data table."""
-        return max(int, self.data_table.weeks)
+        return max(map(int, self.data_table.weeks))
 
     @property
     def previous_week(self):
@@ -40,19 +40,29 @@ class SiteGenerator:
     @property
     def current_week_html(self):
         """Return web page html string for the current week's game"""
-        current_week_games = [
-            g for g in self.data_table.all_rows if g["week"] == self.current_week
-        ]
-        sorted(current_week_games, key=lambda d: d["fun_index"], reverse=True)
+        current_week_games = sorted(
+            [
+                g
+                for g in self.data_table.all_rows
+                if g["week"] == str(self.current_week)
+            ],
+            key=lambda d: float(d["fun_index"]),
+            reverse=True,
+        )
         return self.page_template.render(games=current_week_games)
 
     @property
     def previous_week_html(self):
         """Return web page html string for the previous week's games."""
-        previous_week_games = [
-            d for d in self.data_table.weeks if int(d["week"]) == self.previous_week
-        ]
-        sorted(previous_week_games, key=lambda d: d["fun_index"], reverse=True)
+        previous_week_games = sorted(
+            [
+                g
+                for g in self.data_table.all_rows
+                if g["week"] == str(self.previous_week)
+            ],
+            key=lambda d: float(d["fun_index"]),
+            reverse=True,
+        )
         return self.page_template.render(games=previous_week_games)
 
     @property
