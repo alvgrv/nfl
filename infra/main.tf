@@ -86,6 +86,7 @@ data "aws_iam_policy_document" "site_bucket" {
 }
 
 
+
 #resource "aws_cloudfront_distribution" "site_bucket" {
 #  origin {
 #    domain_name = aws_s3_bucket.site_bucket.bucket_regional_domain_name

@@ -1,23 +1,13 @@
 
 short
 
-- add mechanism for updating has_data, has_been_scraped\
-
-get rid of data, scraped (do i even need a schedule at all????)
-
-**
-ticker reads boxscore/preview from site
-if boxscore and not in data table pks, scrape
-**
-
-
-
-- add pylint, other tooling
+- get s3 bucket website working
 - current season html to deal with no previous week for week 1
 
 mid
 
 - terraform variables
+- terraform refactor modules
 - refactor scraper
     - add flags for things like closeness, other metrics
 - tests for scraper

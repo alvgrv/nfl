@@ -85,13 +85,19 @@ class SiteGenerator:
         LOGGER.info("Generating current week %s", self.current_week)
         with open("/tmp/current.html", "w+", encoding="utf-8") as file:
             file.write(self.current_week_html)
-        self.site_bucket.upload_file("/tmp/current.html", "current.html")
+        self.site_bucket.upload_file(
+            "/tmp/current.html", "current.html", ExtraArgs={"ContentType": "text/html"}
+        )
 
         if self.previous_week:
             LOGGER.info("Generating previous week %s", self.previous_week)
             with open("/tmp/previous.html", "w+", encoding="utf-8") as file:
                 file.write(self.previous_week_html)
-            self.site_bucket.upload_file("/tmp/previous.html", "previous.html")
+            self.site_bucket.upload_file(
+                "/tmp/previous.html",
+                "previous.html",
+                ExtraArgs={"ContentType": "text/html"},
+            )
         else:
             self.site_bucket.delete_objects(
                 Delete={"Objects": [{"Key": "previous.html"}]}
